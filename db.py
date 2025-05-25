@@ -50,10 +50,13 @@ import sqlite3
 import os
 import tempfile
 
-# Use a writable directory for the database file (e.g., /tmp/)
+# Use writable temp directory
 db_path = os.path.join(tempfile.gettempdir(), "gemini_agent.db")
 
-# Connect to the SQLite database
+# Ensure the directory exists and file is writable
+if not os.path.exists(db_path):
+    open(db_path, 'a').close()  # create file if not exists
+
 conn = sqlite3.connect(db_path, check_same_thread=False)
 cursor = conn.cursor()
 
