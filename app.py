@@ -246,14 +246,21 @@ with st.expander("⚙️ Chat Settings"):
             st.warning("Please confirm by checking the box above.")
 
 # --- Voice Input & Output ---
+import tempfile
+import speech_recognition as sr
+import streamlit as st
+from agent import process_query
+import db
+
 st.subheader("🎤 Voice Assistant")
 col1, col2 = st.columns([1, 1])
 
 with col1:
     audio_bytes = st.audio_input("🎧 Record your voice here")
+
     if audio_bytes is not None:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio_file:
-            temp_audio_file.write(audio_bytes)
+            temp_audio_file.write(audio_bytes.read())  # read bytes from UploadedFile
             temp_audio_path = temp_audio_file.name
 
         recognizer = sr.Recognizer()
@@ -281,11 +288,13 @@ with col1:
 with col2:
     if st.button("🔊 Speak Response"):
         if st.session_state.last_response:
+            from voice.text_to_speech import speak_text
+
             audio_file = speak_text(st.session_state.last_response)
             if audio_file:
                 with open(audio_file, 'rb') as f:
-                    audio_bytes = f.read()
-                    st.audio(audio_bytes, format='audio/mp3')
+                    audio_data = f.read()
+                    st.audio(audio_data, format='audio/mp3')
             else:
                 st.error("Text-to-Speech failed. Please try again.")
         else:
