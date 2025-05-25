@@ -4,3 +4,4 @@ duckduckgo-search
 SpeechRecognition  
 gtts
 sounddevice
+pyaudio
