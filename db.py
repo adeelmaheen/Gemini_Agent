@@ -47,8 +47,14 @@
 #     cursor.execute("DELETE FROM notes")
 #     conn.commit()
 import sqlite3
+import os
+import tempfile
 
-conn = sqlite3.connect("gemini_agent.db", check_same_thread=False)
+# Use a writable directory for the database file (e.g., /tmp/)
+db_path = os.path.join(tempfile.gettempdir(), "gemini_agent.db")
+
+# Connect to the SQLite database
+conn = sqlite3.connect(db_path, check_same_thread=False)
 cursor = conn.cursor()
 
 def create_tables():
@@ -72,7 +78,7 @@ def save_chat(sender, message):
     conn.commit()
 
 def load_chats():
-    cursor.execute("SELECT sender, message FROM chats")
+    cursor.execute("SELECT sender, message FROM chats ORDER BY id")
     return cursor.fetchall()
 
 def clear_chats():
@@ -84,7 +90,7 @@ def save_note(content):
     conn.commit()
 
 def load_notes():
-    cursor.execute("SELECT content FROM notes")
+    cursor.execute("SELECT content FROM notes ORDER BY id")
     return [row[0] for row in cursor.fetchall()]
 
 def clear_notes():
